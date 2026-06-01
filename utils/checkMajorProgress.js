@@ -3,14 +3,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { checkDepth } from "../scripts/utils/checkDepth.js";
 import { checkBreadth } from "../scripts/utils/checkBreadth.js"; // NEW
-import { normalizeCourseKey } from "../scripts/utils/normalize.js"; // NEW
-import { PDFParse } from 'pdf-parse';
-import Tesseract from 'tesseract.js';
-import { fromPath } from "pdf2pic";
 
 // Local __dirname for this utils file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 const courseData = JSON.parse(
   fs.readFileSync(
     path.join(__dirname, "../backend/course-data/courses.json"),
@@ -18,73 +15,6 @@ const courseData = JSON.parse(
   )
 );
 const courseCodeData = courseData.map((c) => c.code);
-
-async function parseCoursesFromTranscript(transcriptFile, mimeType, fileName) {
-  // Placeholder implementation - in reality, you'd parse the transcript file format
-  // For example, if it's a CSV with a "Course Code" column, you'd extract that column
-  // Here, we'll just return an empty array for demonstration purposes
-  let fulltext = ""
-  console.log("Parsing transcript file:", transcriptFile);
-  if (mimeType === "application/pdf") {
-    console.log("Transcript is a PDF, using pdf-parse to extract text.");
-    const parser = new PDFParse(transcriptFile);
-    const data = await parser.getText();
-    console.log("Extracted text from PDF:", data.text);
-    fulltext = data.text;
-  } else {
-    console.log("Transcript is not a PDF, using Tesseract OCR to extract text.");
-    const { data: { text } } = await Tesseract.recognize(
-    transcriptFile,  // PDF buffer or image buffer
-    'eng',            // language
-  );
-    console.log("Extracted text via OCR:", text);
-    console.log("Parsed courses from transcript!");
-  }
-  
-  const programText = fulltext.match(/Program:\s*(.+)/);
-  if (programText) {
-    console.log("Detected program from transcript:", programText[1]);
-  } else {
-    console.log("No program detected in transcript.");
-  }
-
-  const termText = fulltext.match(/Level:\s*(.+)/);
-  if (termText) {
-    console.log("Detected term from transcript:", termText[1]);
-  } else {
-    console.log("No term detected in transcript.");
-  }
-
-  const courseCodeRegex = /([A-Za-z]+)\s?(\d{3})/g;
-  const foundCourses = new Set();
-  let match;
-
-  while ((match = courseCodeRegex.exec(fulltext)) !== null) {
-    foundCourses.add(match[0]);
-  }
-  let normalizedCode;
-  const newfoundCourses = new Set();
-  for (let code of foundCourses) {
-    normalizedCode = normalizeCourseKey(code);
-    if (checkExists([normalizedCode])) {
-      console.log(`Course ${normalizedCode} from transcript matches known course data.`);      
-      foundCourses.delete(code);
-      newfoundCourses.add(normalizedCode);
-    } else {
-      console.log(`Course ${code} from transcript does NOT match known course data.`);
-      foundCourses.delete(code);
-    }
-  }
-
-  for (let newcode of newfoundCourses) {
-      foundCourses.add(newcode);
-  }
-
-  
-  console.log("Extracted course codes from transcript:", Array.from(foundCourses));
-
-  return Array.from(foundCourses);
-}
 
 // check if all user courses exist in course data
 function checkExists(userCourses) {
@@ -507,8 +437,7 @@ function checkMajorProgress(major, userCourses, { debug = false } = {}) {
     if (
       key === "required_courses" ||
       key === "elective_requirement" ||
-      key === "additional_requirement" ||
-      key === "technical_elective_requirement"
+      key === "additional_requirement"
     ) {
       result[key] = checkReq(
         value,
@@ -546,5 +475,4 @@ export {
   checkBreadthReq,
   checkDepthReq,
   checkMajorProgress,
-  parseCoursesFromTranscript
 };

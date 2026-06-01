@@ -24,7 +24,8 @@
 /* ======================== */
 body {
   text-shadow: 0 0.05rem 0.1rem rgba(0, 0, 0, 0.5);
-  background-color: #000000;    /* Fallback if Vanta fails */            /* Hide scrollbars from Vanta background */
+  background-color: #000000;    /* Fallback if Vanta fails */
+  overflow: hidden;             /* Hide scrollbars from Vanta background */
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -110,6 +111,7 @@ header h3:hover {
   font-size: 0.95rem;
   transition: all 0.3s ease;
   position: relative;
+  overflow: hidden;
 }
 
 /* Animated underline effect */

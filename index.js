@@ -11,7 +11,6 @@ import {
   checkBreadthReq,
   checkDepthReq,
   checkMajorProgress,
-  parseCoursesFromTranscript
 } from "./utils/checkMajorProgress.js";
 import uwflowRouter from "./routes/uwflow.js";
 
@@ -21,13 +20,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-import multer from 'multer';
-
-// store file in memory (so you can access .buffer)
-const storage = multer.memoryStorage();
-
-const upload = multer({ storage: storage });
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -69,95 +61,29 @@ app.get("/contact", (req, res) => {
   });
 });
 
-app.post("/upload", (req, res) => {
-  res.render("layout", {
-    title: "Contact",
-    activePage: "contact",
-    content: ejs.render(fs.readFileSync("views/contact.ejs", "utf-8")),
-  });
-});
-
-app.post("/submit", upload.single('transcriptFile'), async (req, res) => {
+app.post("/submit", (req, res) => {
   const major = req.body.major;
-  console.log("Major received:", req.body.major);
- 
-  const engineeringMajor = req.body.engineeringMajor;
-  const term = req.body.term;
-  const transcriptFile = req.file;
-
-  if (!transcriptFile) {
-    console.log("No file received");
-    //return res.status(400).send("No file uploaded");
-  }
-
-  let userCourses = [];
-
-  if (transcriptFile) {
-
-    console.log("Transcript file:", transcriptFile.originalname);
-    console.log("Transcript PDF:", transcriptFile.mimetype);
-    console.log("Transcript File Data:", transcriptFile.buffer);
-
-
-    console.log("Transcript file uploaded, parsing courses from file.");
-
-    try {
-      userCourses = await parseCoursesFromTranscript(
-        new Uint8Array(transcriptFile.buffer),
-        transcriptFile.mimetype,
-        transcriptFile.originalname
-      );
-
-      console.log("Parsed courses from transcript:", userCourses);
-      console.log("User courses parsed, yay!");
-    } catch (err) {
-      console.error("Error parsing transcript:", err);
-    }
-  } else {
-    console.log("No transcript file uploaded, using courses from form input.");
-
-    userCourses = req.body.courses
-      .split(",")
-      .map((course) => course.trim().toUpperCase().replace(" ", ""));
-  
-    console.log("User courses:", userCourses);
-    
-    if (!checkExists(userCourses)) {
-      return res.render("layout", {
-        title: "Home",
-        activePage: "home",
-        content: ejs.render(fs.readFileSync("views/homepage.ejs", "utf-8"), {
-          error:
-            "One or more courses you entered do not exist. Please check and try again.",
-        }),
-      });
-    }
-  }
-
-  console.log("Final user courses to check:", userCourses);
-  
-  if (major === "Engineering") {
-    console.log("Engineering Course");
-    const progress = checkMajorProgress(engineeringMajor, userCourses);
-    res.render("result.ejs", {
-      title: "Results",
-      program: engineeringMajor,
-      progress,
-      term,
-      userCourses: userCourses.join(", ")
+  const userCourses = req.body.courses
+    .split(",")
+    .map((course) => course.trim().toUpperCase().replace(" ", ""));
+  if (!checkExists(userCourses)) {
+    return res.render("layout", {
+      title: "Home",
+      activePage: "home",
+      content: ejs.render(fs.readFileSync("views/homepage.ejs", "utf-8"), {
+        error:
+          "One or more courses you entered do not exist. Please check and try again.",
+      }),
     });
-  } else {
-      console.log("Math Course!");
-
-      const progress = checkMajorProgress(major, userCourses);
-      console.log(progress);
-      res.render("result.ejs", {
-        title: "Results",
-        program: progress.program,
-        progress,
-        userCourses: userCourses.join(", ")
-      });
   }
+  const progress = checkMajorProgress(major, userCourses);
+  console.log(progress);
+  res.render("result.ejs", {
+    title: "Results",
+    program: progress.program,
+    progress,
+    userCourses: userCourses.join(", ")
+  });
 });
 
 app.listen(PORT, () => {
