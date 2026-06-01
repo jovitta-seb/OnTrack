@@ -1,0 +1,174 @@
+[
+  {
+    "code": "BME499",
+    "title": "Elective Biomedical Research Project"
+  },
+  {
+    "code": "BME544",
+    "title": "Biomedical Measurement and Signal Processing"
+  },
+  {
+    "code": "BME550",
+    "title": "Sports Engineering"
+  },
+  {
+    "code": "BME551",
+    "title": "Biomechanics of Human Movement"
+  },
+  {
+    "code": "BME581",
+    "title": "Ultrasound in Medicine and Biology"
+  },
+  {
+    "code": "BME587",
+    "title": "Special Topics in Biomedical Signals"
+  },
+  {
+    "code": "BME588",
+    "title": "Special Topics in Biomechanics"
+  },
+  {
+    "code": "BME589",
+    "title": "Special Topics in Biomedical Devices"
+  },
+  {
+    "code": "CIVE440",
+    "title": "Transit Planning and Operations"
+  },
+  {
+    "code": "CIVE460",
+    "title": "Engineering Biomechanics"
+  },
+  {
+    "code": "ECE356",
+    "title": "Database Systems"
+  },
+  {
+    "code": "ECE358",
+    "title": "Computer Networks"
+  },
+  {
+    "code": "ECE406",
+    "title": "Algorithm Design and Analysis"
+  },
+  {
+    "code": "ECE457B",
+    "title": "Fundamentals of Computational Intelligence"
+  },
+  {
+    "code": "ECE459",
+    "title": "Programming for Performance"
+  },
+  {
+    "code": "ECE484",
+    "title": "Digital Control Applications"
+  },
+  {
+    "code": "PLAN478",
+    "title": "Transit Planning and Operations"
+  },
+  {
+    "code": "ME321",
+    "title": "Dynamics of Machines and Mechanical Vibrations"
+  },
+  {
+    "code": "ME574",
+    "title": "Engineering Biomechanics"
+  },
+  {
+    "code": "MSE343",
+    "title": "Human-Computer Interaction"
+  },
+  {
+    "code": "MSE432",
+    "title": "Production and Service Operations Management"
+  },
+  {
+    "code": "MSE446",
+    "title": "Introduction to Machine Learning"
+  },
+  {
+    "code": "MSE555",
+    "title": "Scheduling: Theory and Practice"
+  },
+  {
+    "code": "MTE241",
+    "title": "Introduction to Computer Structures and Real-Time Systems"
+  },
+  {
+    "code": "MTE325",
+    "title": "Microprocessor Systems and Interfacing for Mechatronics Engineering"
+  },
+  {
+    "code": "MTE544",
+    "title": "Autonomous Mobile Robots"
+  },
+  {
+    "code": "SYDE322",
+    "title": "Software Design"
+  },
+  {
+    "code": "SYDE334",
+    "title": "Applied Statistics"
+  },
+  {
+    "code": "SYDE522",
+    "title": "Foundations of Artificial Intelligence"
+  },
+  {
+    "code": "SYDE531",
+    "title": "Design Optimization Under Probabilistic Uncertainty"
+  },
+  {
+    "code": "SYDE532",
+    "title": "Introduction to Complex Systems"
+  },
+  {
+    "code": "SYDE533",
+    "title": "Conflict Resolution"
+  },
+  {
+    "code": "SYDE542",
+    "title": "Interface Design"
+  },
+  {
+    "code": "SYDE543",
+    "title": "Cognitive Ergonomics"
+  },
+  {
+    "code": "SYDE544",
+    "title": "Biomedical Measurement and Signal Processing"
+  },
+  {
+    "code": "SYDE548",
+    "title": "User Centred Design Methods"
+  },
+  {
+    "code": "SYDE552",
+    "title": "Computational Neuroscience"
+  },
+  {
+    "code": "SYDE553",
+    "title": "Advanced Dynamics"
+  },
+  {
+    "code": "SYDE556",
+    "title": "Simulating Neurobiological Systems"
+  },
+  {
+    "code": "SYDE572",
+    "title": "Introduction to Pattern Recognition"
+  },
+  {
+    "code": "SYDE575",
+    "title": "Image Processing"
+  },
+  {
+    "code": "SYDE584",
+    "title": "Physiological Systems and Biomedical Design"
+  },
+  {
+    "code": "SYDE599",
+    "title": "Special Topics in Systems Design Engineering"
+  }
+]

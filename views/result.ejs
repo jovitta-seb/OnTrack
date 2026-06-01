@@ -41,87 +41,68 @@
             <p class="program-name"><%= program %></p>
           </div>
 
-          <% 
-          // Helper function to calculate progress
-          function calculateProgress(requirements) {
-            if (Array.isArray(requirements)) {
-              const met = requirements.filter(r => r.met).length;
-              const total = requirements.length;
-              return { met, total, percent: Math.round((met / total) * 100) };
+
+            <% function calculateProgress(requirements) {
+              if (Array.isArray(requirements)) {
+                const met = requirements.filter(r => r.met).length;
+                const total = requirements.length;
+                return { met, total, percent: Math.round((met / total) * 100) };
+              }
+              return null;
             }
-            return null;
-          }
-          %>
+            %>
 
-          <% Object.entries(progress).forEach(([section, requirements], idx) => { %>
-            <% if (Array.isArray(requirements)) { %>
-              <% const prog = calculateProgress(requirements); %>
-              <div class="results-section">
-                <button
-                  class="section-header collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#section-<%= idx %>"
-                  aria-expanded="false"
-                  aria-controls="section-<%= idx %>">
-                  <div class="section-title-wrapper">
-                    <span>
-                      <% if (section === "required_courses") { %>
-                        Core Courses
-                      <% } else if (section === "elective_requirement") { %>
-                        Elective Requirements
-                      <% } else if (section === "additional_requirement") { %>
-                        Additional Requirements
-                      <% } else { %>
-                        <%= section %>
+            <% Object.entries(progress || {}).forEach(([section, requirements], idx) => { %>
+              <% if (Array.isArray(requirements)) { %>
+                <% const prog = calculateProgress(requirements); %>
+                <div class="results-section">
+                  <button
+                    class="section-header collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#section-<%= idx %>"
+                    aria-expanded="false"
+                    aria-controls="section-<%= idx %>">
+                    <div class="section-title-wrapper">
+                      <span>
+                        <% if (section === "required_courses") { %>
+                          Core Courses
+                        <% } else if (section === "elective_requirement") { %>
+                          Elective Requirements
+                        <% } else if (section === "additional_requirement") { %>
+                          Additional Requirements
+                        <% } else if (section === "technical_elective_requirement") { %>
+                          Technical Elective Requirements
+                        <% } else { %>
+                          <%= section %>
+                        <% } %>
+                      </span>
+                      <% if (prog) { %>
+                        <div class="section-progress">
+                          <span><%= prog.met %>/<%= prog.total %></span>
+                          <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: <%= prog.percent %>%"></div>
+                          </div>
+                        </div>
                       <% } %>
-                    </span>
-                    <% if (prog) { %>
-                      <div class="section-progress">
-                        <span><%= prog.met %>/<%= prog.total %></span>
-                        <div class="progress-bar-container">
-                          <div class="progress-bar-fill" style="width: <%= prog.percent %>%"></div>
-                        </div>
-                      </div>
-                    <% } %>
-                  </div>
-                  <span class="collapse-icon">▼</span>
-                </button>
+                    </div>
+                    <span class="collapse-icon">▼</span>
+                  </button>
 
-                <div class="collapse" id="section-<%= idx %>">
-                  <% requirements.forEach(req => { %>
-                    <div class="requirement-item">
-                      <div class="requirement-header">
-                        <span class="requirement-description"><%= req.description %></span>
-                        <span class="badge <%= req.met ? 'met' : 'not-met' %>">
-                          <%= req.met ? "✓ Met" : "✗ Not Met" %>
-                        </span>
-                      </div>
-                      <div class="meta">
-                        <div style="margin-bottom: 0.5rem;">
-                          <span class="meta-label">Taken:</span>
-                          <% if (req.courses_taken.length) { %>
-                            <% req.courses_taken.forEach((c, i) => { %>
-                              <a
-                                href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
-                                target="_blank"
-                                rel="noopener"
-                                class="course-code"
-                                data-code="<%= c.code %>"
-                                data-bs-toggle="tooltip"
-                                data-bs-title="Loading UWFlow data...">
-                                <%= c.code %>
-                              </a>
-                            <% }) %>
-                          <% } else { %>
-                            <span style="opacity: 0.6;">None</span>
-                          <% } %>
+                  <div class="collapse" id="section-<%= idx %>">
+                    <% requirements.forEach(req => { %>
+                      <div class="requirement-item">
+                        <div class="requirement-header">
+                          <span class="requirement-description"><%= req.description %></span>
+                          <span class="badge <%= req.met ? 'met' : 'not-met' %>">
+                            <%= req.met ? "✓ Met" : "✗ Not Met" %>
+                          </span>
                         </div>
-                        <% if (req.type !== 'one_required' && req.type !== 'all_required') { %>
-                          <div>
-                            <span class="meta-label">Available Options:</span>
-                            <% if (req.courses_remaining.length) { %>
-                              <% req.courses_remaining.forEach((c, i) => { %>
+                        <div class="meta">
+                          <div style="margin-bottom: 0.5rem;">
+                            <span class="meta-label">Taken:</span>
+                            <% if (req.courses_taken.length) { %>
+                              <% req.courses_taken.forEach((c, i) => { %>
                                 <a
                                   href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
                                   target="_blank"
@@ -137,238 +118,258 @@
                               <span style="opacity: 0.6;">None</span>
                             <% } %>
                           </div>
-                        <% } %>
+                          <% if (req.type !== 'one_required' && req.type !== 'all_required') { %>
+                            <div>
+                              <span class="meta-label">Available Options:</span>
+                              <% if (req.courses_remaining.length) { %>
+                                <% req.courses_remaining.forEach((c, i) => { %>
+                                  <a
+                                    href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="course-code"
+                                    data-code="<%= c.code %>"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Loading UWFlow data...">
+                                    <%= c.code %>
+                                  </a>
+                                <% }) %>
+                              <% } else { %>
+                                <span style="opacity: 0.6;">None</span>
+                              <% } %>
+                            </div>
+                          <% } %>
+                        </div>
                       </div>
-                    </div>
-                  <% }) %>
-                </div>
-              </div>
-
-            <% } else if (section === "communication_requirement") { %>
-              <% 
-              const commTotal = Object.keys(requirements.lists).length;
-              const commMet = Object.values(requirements.lists).filter(list => list.courses_taken.length > 0).length;
-              const commPercent = Math.round((commMet / commTotal) * 100);
-              %>
-              <div class="results-section">
-                <button
-                  class="section-header collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#section-<%= idx %>"
-                  aria-expanded="false"
-                  aria-controls="section-<%= idx %>">
-                  <div class="section-title-wrapper">
-                    <span>Communication Requirements</span>
-                    <div class="section-progress">
-                      <span><%= commMet %>/<%= commTotal %></span>
-                      <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: <%= commPercent %>%"></div>
-                      </div>
-                    </div>
+                    <% }) %>
                   </div>
-                  <span class="collapse-icon">▼</span>
-                </button>
+                </div>
 
-                <div class="collapse" id="section-<%= idx %>">
-                  <% Object.entries(requirements.lists).forEach(([listName, list]) => { %>
+              <% } else if (section === "communication_requirement") { %>
+                <% 
+                const commTotal = Object.keys(requirements.lists).length;
+                const commMet = Object.values(requirements.lists).filter(list => list.courses_taken.length > 0).length;
+                const commPercent = Math.round((commMet / commTotal) * 100);
+                %>
+                <div class="results-section">
+                  <button
+                    class="section-header collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#section-<%= idx %>"
+                    aria-expanded="false"
+                    aria-controls="section-<%= idx %>">
+                    <div class="section-title-wrapper">
+                      <span>Communication Requirements</span>
+                      <div class="section-progress">
+                        <span><%= commMet %>/<%= commTotal %></span>
+                        <div class="progress-bar-container">
+                          <div class="progress-bar-fill" style="width: <%= commPercent %>%"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="collapse-icon">▼</span>
+                  </button>
+
+                  <div class="collapse" id="section-<%= idx %>">
+                    <% Object.entries(requirements.lists).forEach(([listName, list]) => { %>
+                      <div class="requirement-item">
+                        <div class="requirement-header">
+                          <span class="requirement-description"><%= list.description %></span>
+                        </div>
+                        <div class="meta">
+                          <div style="margin-bottom: 0.5rem;">
+                            <span class="meta-label">Taken:</span>
+                            <% if (list.courses_taken.length) { %>
+                              <% list.courses_taken.forEach((c, i) => { %>
+                                <a
+                                  href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
+                                  target="_blank"
+                                  rel="noopener"
+                                  class="course-code"
+                                  data-code="<%= c.code %>"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-title="Loading UWFlow data...">
+                                  <%= c.code %>
+                                </a>
+                              <% }) %>
+                            <% } else { %>
+                              <span style="opacity: 0.6;">None</span>
+                            <% } %>
+                          </div>
+                          <div>
+                            <span class="meta-label">Available Options:</span>
+                            <% if (list.courses_remaining.length) { %>
+                              <% list.courses_remaining.forEach((c, i) => { %>
+                                <a
+                                  href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
+                                  target="_blank"
+                                  rel="noopener"
+                                  class="course-code"
+                                  data-code="<%= c.code %>"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-title="Loading UWFlow data...">
+                                  <%= c.code %>
+                                </a>
+                              <% }) %>
+                            <% } else { %>
+                              <span style="opacity: 0.6;">None</span>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+
+                    <h5 class="section-category-title">Communication Options</h5>
+                    <% requirements.options.forEach(opt => { %>
+                      <div class="requirement-item">
+                        <div class="requirement-header">
+                          <span class="requirement-description"><%= opt.description %></span>
+                          <span class="badge <%= opt.met ? 'met' : 'not-met' %>">
+                            <%= opt.met ? "✓ Met" : "✗ Not Met" %>
+                          </span>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+
+              <% } else if (section === "breadth_requirement") { %>
+                <% 
+                const breadthCategories = Object.values(requirements.categories);
+                const breadthMet = breadthCategories.filter(c => c.met).length;
+                const breadthTotal = breadthCategories.length;
+                const breadthPercent = Math.round((breadthMet / breadthTotal) * 100);
+                %>
+                <div class="results-section">
+                  <button
+                    class="section-header collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#section-<%= idx %>"
+                    aria-expanded="false"
+                    aria-controls="section-<%= idx %>">
+                    <div class="section-title-wrapper">
+                      <span>Breadth Requirement</span>
+                      <div class="section-progress">
+                        <span><%= breadthMet %>/<%= breadthTotal %></span>
+                        <div class="progress-bar-container">
+                          <div class="progress-bar-fill" style="width: <%= breadthPercent %>%"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="collapse-icon">▼</span>
+                  </button>
+
+                  <div class="collapse" id="section-<%= idx %>">
                     <div class="requirement-item">
                       <div class="requirement-header">
-                        <span class="requirement-description"><%= list.description %></span>
+                        <span class="requirement-description">Overall Status</span>
+                        <span class="badge <%= requirements.satisfied ? 'met' : 'not-met' %>">
+                          <%= requirements.satisfied ? "✓ Met" : "✗ Not Met" %>
+                        </span>
                       </div>
                       <div class="meta">
-                        <div style="margin-bottom: 0.5rem;">
-                          <span class="meta-label">Taken:</span>
-                          <% if (list.courses_taken.length) { %>
-                            <% list.courses_taken.forEach((c, i) => { %>
-                              <a
-                                href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
-                                target="_blank"
-                                rel="noopener"
-                                class="course-code"
-                                data-code="<%= c.code %>"
-                                data-bs-toggle="tooltip"
-                                data-bs-title="Loading UWFlow data...">
-                                <%= c.code %>
-                              </a>
-                            <% }) %>
-                          <% } else { %>
-                            <span style="opacity: 0.6;">None</span>
-                          <% } %>
-                        </div>
-                        <div>
-                          <span class="meta-label">Available Options:</span>
-                          <% if (list.courses_remaining.length) { %>
-                            <% list.courses_remaining.forEach((c, i) => { %>
-                              <a
-                                href="https://uwflow.com/course/<%= c.code.toLowerCase() %>"
-                                target="_blank"
-                                rel="noopener"
-                                class="course-code"
-                                data-code="<%= c.code %>"
-                                data-bs-toggle="tooltip"
-                                data-bs-title="Loading UWFlow data...">
-                                <%= c.code %>
-                              </a>
-                            <% }) %>
-                          <% } else { %>
-                            <span style="opacity: 0.6;">None</span>
-                          <% } %>
-                        </div>
+                        The Breadth Requirement ensures coverage across four areas:
+                        Humanities, Social Sciences, Pure Sciences, and Applied Sciences.
                       </div>
                     </div>
-                  <% }) %>
 
-                  <h5 class="section-category-title">Communication Options</h5>
-                  <% requirements.options.forEach(opt => { %>
+                    <% Object.entries(requirements.categories).forEach(([cat, info]) => { %>
+                      <div class="requirement-item">
+                        <div class="requirement-header">
+                          <span class="requirement-description">
+                            <%= cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, " ") %>
+                            (<%= info.units %> unit<%= info.units !== 1 ? 's' : '' %>)
+                          </span>
+                          <span class="badge <%= info.met ? 'met' : 'not-met' %>">
+                            <%= info.met ? "✓ Met" : "✗ Not Met" %>
+                          </span>
+                        </div>
+                        <div class="meta">
+                          <div style="margin-bottom: 0.5rem;">
+                            <span class="meta-label">Progress:</span>
+                            <%= info.taken.length %>/<%= info.needed %>
+                          </div>
+                          <div>
+                            <span class="meta-label">Courses Taken:</span>
+                            <% if (info.taken.length) { %>
+                              <% info.taken.forEach((c, i) => { %>
+                                <a
+                                  href="https://uwflow.com/course/<%= c.trim().replace(/\s+/g, '').toLowerCase() %>"
+                                  target="_blank"
+                                  rel="noopener"
+                                  class="course-code"
+                                  data-code="<%= c.trim().replace(/\s+/g, '') %>"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-title="Loading UWFlow data...">
+                                  <%= c %>
+                                </a>
+                              <% }) %>
+                            <% } else { %>
+                              <span style="opacity: 0.6;">None</span>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+
+              <% } else if (section === "depth_requirement") { %>
+                <div class="results-section">
+                  <button
+                    class="section-header collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#section-<%= idx %>"
+                    aria-expanded="false"
+                    aria-controls="section-<%= idx %>">
+                    <div class="section-title-wrapper">
+                      <span>Depth Requirement</span>
+                      <div class="section-progress">
+                        <span class="badge <%= requirements.satisfied ? 'met' : 'not-met' %>" style="padding: 0.25rem 0.6rem;">
+                          <%= requirements.satisfied ? "✓" : "✗" %>
+                        </span>
+                      </div>
+                    </div>
+                    <span class="collapse-icon">▼</span>
+                  </button>
+
+                  <div class="collapse" id="section-<%= idx %>">
                     <div class="requirement-item">
+                      <div class="meta" style="margin-bottom: 1rem;">
+                        The Depth Requirement can be met in two ways:
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                          <li>3 courses (1.5 units) from the same subject, with at least one at the third-year level or higher</li>
+                          <li><strong>OR</strong> 3 courses (1.5 units) forming a prerequisite chain of length three</li>
+                        </ul>
+                      </div>
                       <div class="requirement-header">
-                        <span class="requirement-description"><%= opt.description %></span>
-                        <span class="badge <%= opt.met ? 'met' : 'not-met' %>">
-                          <%= opt.met ? "✓ Met" : "✗ Not Met" %>
+                        <span class="requirement-description">Status</span>
+                        <span class="badge <%= requirements.satisfied ? 'met' : 'not-met' %>">
+                          <%= requirements.satisfied ? "✓ Met" : "✗ Not Met" %>
                         </span>
                       </div>
-                    </div>
-                  <% }) %>
-                </div>
-              </div>
-
-            <% } else if (section === "breadth_requirement") { %>
-              <% 
-              const breadthCategories = Object.values(requirements.categories);
-              const breadthMet = breadthCategories.filter(c => c.met).length;
-              const breadthTotal = breadthCategories.length;
-              const breadthPercent = Math.round((breadthMet / breadthTotal) * 100);
-              %>
-              <div class="results-section">
-                <button
-                  class="section-header collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#section-<%= idx %>"
-                  aria-expanded="false"
-                  aria-controls="section-<%= idx %>">
-                  <div class="section-title-wrapper">
-                    <span>Breadth Requirement</span>
-                    <div class="section-progress">
-                      <span><%= breadthMet %>/<%= breadthTotal %></span>
-                      <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: <%= breadthPercent %>%"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <span class="collapse-icon">▼</span>
-                </button>
-
-                <div class="collapse" id="section-<%= idx %>">
-                  <div class="requirement-item">
-                    <div class="requirement-header">
-                      <span class="requirement-description">Overall Status</span>
-                      <span class="badge <%= requirements.satisfied ? 'met' : 'not-met' %>">
-                        <%= requirements.satisfied ? "✓ Met" : "✗ Not Met" %>
-                      </span>
-                    </div>
-                    <div class="meta">
-                      The Breadth Requirement ensures coverage across four areas:
-                      Humanities, Social Sciences, Pure Sciences, and Applied Sciences.
-                    </div>
-                  </div>
-
-                  <% Object.entries(requirements.categories).forEach(([cat, info]) => { %>
-                    <div class="requirement-item">
-                      <div class="requirement-header">
-                        <span class="requirement-description">
-                          <%= cat.charAt(0).toUpperCase() + cat.slice(1).replace(/_/g, " ") %>
-                          (<%= info.units %> unit<%= info.units !== 1 ? 's' : '' %>)
-                        </span>
-                        <span class="badge <%= info.met ? 'met' : 'not-met' %>">
-                          <%= info.met ? "✓ Met" : "✗ Not Met" %>
-                        </span>
-                      </div>
-                      <div class="meta">
-                        <div style="margin-bottom: 0.5rem;">
-                          <span class="meta-label">Progress:</span>
-                          <%= info.taken.length %>/<%= info.needed %>
+                      <% if (requirements.satisfied) { %>
+                        <div class="meta" style="margin-top: 0.75rem;">
+                          <div style="margin-bottom: 0.5rem;">
+                            <span class="meta-label">Subject:</span> <%= requirements.subject %>
+                          </div>
+                          <div>
+                            <span class="meta-label">Chain:</span> <%= (requirements.chain || []).slice().reverse().join(" → ") %>
+                          </div>
                         </div>
-                        <div>
-                          <span class="meta-label">Courses Taken:</span>
-                          <% if (info.taken.length) { %>
-                            <% info.taken.forEach((c, i) => { %>
-                              <a
-                                href="https://uwflow.com/course/<%= c.trim().replace(/\s+/g, '').toLowerCase() %>"
-                                target="_blank"
-                                rel="noopener"
-                                class="course-code"
-                                data-code="<%= c.trim().replace(/\s+/g, '') %>"
-                                data-bs-toggle="tooltip"
-                                data-bs-title="Loading UWFlow data...">
-                                <%= c %>
-                              </a>
-                            <% }) %>
-                          <% } else { %>
-                            <span style="opacity: 0.6;">None</span>
-                          <% } %>
+                      <% } else { %>
+                        <div class="meta" style="margin-top: 0.75rem;">
+                          <%= requirements.note %>
                         </div>
-                      </div>
+                      <% } %>
                     </div>
-                  <% }) %>
-                </div>
-              </div>
-
-            <% } else if (section === "depth_requirement") { %>
-              <div class="results-section">
-                <button
-                  class="section-header collapsed"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#section-<%= idx %>"
-                  aria-expanded="false"
-                  aria-controls="section-<%= idx %>">
-                  <div class="section-title-wrapper">
-                    <span>Depth Requirement</span>
-                    <div class="section-progress">
-                      <span class="badge <%= requirements.satisfied ? 'met' : 'not-met' %>" style="padding: 0.25rem 0.6rem;">
-                        <%= requirements.satisfied ? "✓" : "✗" %>
-                      </span>
-                    </div>
-                  </div>
-                  <span class="collapse-icon">▼</span>
-                </button>
-
-                <div class="collapse" id="section-<%= idx %>">
-                  <div class="requirement-item">
-                    <div class="meta" style="margin-bottom: 1rem;">
-                      The Depth Requirement can be met in two ways:
-                      <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
-                        <li>3 courses (1.5 units) from the same subject, with at least one at the third-year level or higher</li>
-                        <li><strong>OR</strong> 3 courses (1.5 units) forming a prerequisite chain of length three</li>
-                      </ul>
-                    </div>
-                    <div class="requirement-header">
-                      <span class="requirement-description">Status</span>
-                      <span class="badge <%= requirements.satisfied ? 'met' : 'not-met' %>">
-                        <%= requirements.satisfied ? "✓ Met" : "✗ Not Met" %>
-                      </span>
-                    </div>
-                    <% if (requirements.satisfied) { %>
-                      <div class="meta" style="margin-top: 0.75rem;">
-                        <div style="margin-bottom: 0.5rem;">
-                          <span class="meta-label">Subject:</span> <%= requirements.subject %>
-                        </div>
-                        <div>
-                          <span class="meta-label">Chain:</span> <%= (requirements.chain || []).slice().reverse().join(" → ") %>
-                        </div>
-                      </div>
-                    <% } else { %>
-                      <div class="meta" style="margin-top: 0.75rem;">
-                        <%= requirements.note %>
-                      </div>
-                    <% } %>
                   </div>
                 </div>
-              </div>
-            <% } %>
-          <% }) %>
+              <% } %>
+            <% }) %>
         </div>
       </main>
 
